@@ -52,9 +52,6 @@ export default function LoginPage() {
     <div className="login-page">
       <form className="login-card" onSubmit={handleSubmit}>
         <h1>Вход в систему</h1>
-        <p>
-          Выберите роль для демонстрации возможностей системы
-        </p>
 
         <div className="role-switch">
           <button
@@ -100,7 +97,7 @@ export default function LoginPage() {
             <input
               value={currentUserId}
               onChange={(event) => setCurrentUserId(event.target.value)}
-              placeholder="UUID пользователя из бд"
+              placeholder="UUID пользователя"
             />
           </label>
         )}

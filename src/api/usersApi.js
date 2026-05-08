@@ -22,6 +22,11 @@ export const usersApi = {
     return response.data;
   },
 
+  getAllHistory: async () => {
+    const response = await apiClient.get("/history");
+    return response.data;
+  },
+
   getUserHistory: async (userId) => {
     const response = await apiClient.get(`/users/${userId}/history`);
     return response.data;

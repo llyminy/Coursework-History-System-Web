@@ -1,4 +1,11 @@
+import { useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
+
+import Tabs from "../components/Tabs";
+
+import ProfilePanel from "../components/ProfilePanel";
+import UsersListPanel from "../components/UsersListPanel";
+import HistoryPanel from "../components/HistoryPanel";
 
 export default function DashboardPage() {
   const navigate = useNavigate();
@@ -7,33 +14,72 @@ export default function DashboardPage() {
   const username = localStorage.getItem("username");
   const currentUserId = localStorage.getItem("currentUserId");
 
-  const handleLogout = () => {
-    localStorage.removeItem("username");
-    localStorage.removeItem("password");
-    localStorage.removeItem("role");
-    localStorage.removeItem("currentUserId");
+  const [activeTab, setActiveTab] = useState("profile");
 
+  const handleLogout = () => {
+    localStorage.clear();
     navigate("/login");
   };
+
+  const adminTabs = useMemo(
+    () => [
+      {
+        key: "profile",
+        label: "Профиль",
+        content: <ProfilePanel />,
+      },
+      {
+        key: "users",
+        label: "Список пользователей",
+        content: <UsersListPanel />,
+      },
+      {
+        key: "history",
+        label: "История изменений",
+        content: <HistoryPanel />,
+      },
+    ],
+    []
+  );
+
+  const userTabs = useMemo(
+    () => [
+      {
+        key: "profile",
+        label: "Профиль",
+        content: <ProfilePanel />,
+      },
+      {
+        key: "history",
+        label: "История моих изменений",
+        content: <HistoryPanel />,
+      },
+    ],
+    []
+  );
+
+  const tabs = role === "ADMIN" ? adminTabs : userTabs;
 
   return (
     <div className="page">
       <div className="card">
-        <div className="page-header">
+        <div className="dashboard-header">
           <div>
-            <h1>Панель системы</h1>
-            <p>Текущая роль: {role}</p>
-            <p>Пользователь авторизации: {username}</p>
-            {currentUserId && <p>ID профиля: {currentUserId}</p>}
+            <h1>
+              Система хранения истории изменений пользовательских данных
+            </h1>
           </div>
 
-          <button onClick={handleLogout}>Выйти</button>
+          <button className="logout-button" onClick={handleLogout}>
+            Выйти
+          </button>
         </div>
 
-        <p>
-          Здесь позже появятся вкладки: профиль, список пользователей, история
-          изменений и восстановление.
-        </p>
+        <Tabs
+          tabs={tabs}
+          activeTab={activeTab}
+          onChange={setActiveTab}
+        />
       </div>
     </div>
   );
