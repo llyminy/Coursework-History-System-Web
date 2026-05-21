@@ -6,6 +6,7 @@ export default function RestorePanel({ userId, onRestored }) {
   const [selectedTime, setSelectedTime] = useState("");
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState("");
+  const [showConfirmModal, setShowConfirmModal] = useState(false);
 
   useEffect(() => {
     if (userId) {
@@ -28,19 +29,17 @@ export default function RestorePanel({ userId, onRestored }) {
     }
   };
 
-  const handleRestore = async () => {
+  const handleRestore = () => {
     if (!selectedTime) {
       setMessage("Выберите точку восстановления");
       return;
     }
 
-    const confirmed = window.confirm(
-      "Вы уверены, что хотите восстановить данные пользователя по выбранной точке?"
-    );
+    setShowConfirmModal(true);
+  };
 
-    if (!confirmed) {
-      return;
-    }
+  const confirmRestore = async () => {
+    setShowConfirmModal(false);
 
     try {
       setLoading(true);
@@ -59,7 +58,6 @@ export default function RestorePanel({ userId, onRestored }) {
       console.error(error);
 
       const backendMessage = error.response?.data?.message;
-
       setMessage(backendMessage || "Ошибка при восстановлении данных");
     } finally {
       setLoading(false);
@@ -164,6 +162,35 @@ export default function RestorePanel({ userId, onRestored }) {
             ))}
           </div>
         </>
+      )}
+
+      {showConfirmModal && (
+        <div className="modal-overlay">
+          <div className="confirm-modal">
+            <h3>Подтверждение восстановления</h3>
+
+            <p>
+              Вы уверены, что хотите восстановить данные пользователя по выбранной точке?
+            </p>
+
+            <div className="modal-actions">
+              <button
+                className="secondary-button"
+                onClick={() => setShowConfirmModal(false)}
+              >
+                Отмена
+              </button>
+
+              <button
+                className="primary-button"
+                onClick={confirmRestore}
+                disabled={loading}
+              >
+                Да
+              </button>
+            </div>
+          </div>
+        </div>
       )}
     </div>
   );
